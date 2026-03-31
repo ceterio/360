@@ -144,6 +144,7 @@ export default function App() {
         mouseZoom: true,
         friction: 0.1,
         autoRotate: autoRotate ? -2 : 0,
+        crossOrigin: "anonymous"
       });
 
       v.on('load', () => setIsLoading(false));
