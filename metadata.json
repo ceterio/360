@@ -1,5 +1,5 @@
 {
-  "name": "360 Steampunk Library Explorer",
-  "description": "An interactive 360-degree viewer for a steampunk library with a hidden object search mechanic.",
+  "name": "Migraciones Climáticas 360",
+  "description": "Una experiencia inmersiva 360° sobre la crisis climática y los desplazamientos forzados.",
   "requestFramePermissions": ["gyroscope", "accelerometer"]
 }
