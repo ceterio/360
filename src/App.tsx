@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Compass, 
   Smartphone, 
