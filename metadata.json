@@ -1,0 +1,5 @@
+{
+  "name": "360 Steampunk Library Explorer",
+  "description": "An interactive 360-degree viewer for a steampunk library with a hidden object search mechanic.",
+  "requestFramePermissions": ["gyroscope", "accelerometer"]
+}
