@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Compass, 
   Smartphone, 
@@ -40,15 +40,15 @@ interface Scenario {
   color: string;
 }
 
-const MENU_PANORAMA = "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/tunnel.jpg&v=1";
-const DEFAULT_360_IMAGE = "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/field.jpg&v=1";
+const MENU_PANORAMA = "https://pannellum.org/images/alma.jpg";
+const DEFAULT_360_IMAGE = "https://pannellum.org/images/jfk.jpg";
 
 const SCENARIOS: Scenario[] = [
   {
     id: "incendios",
     title: "Incendios Forestales",
     subtitle: "España y Portugal bajo el fuego",
-    image: "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/mountain.jpg&v=1",
+    image: "https://pannellum.org/images/cerro-toco.jpg",
     icon: Flame,
     color: "from-orange-600 to-red-700",
   },
@@ -64,7 +64,7 @@ const SCENARIOS: Scenario[] = [
     id: "inundaciones",
     title: "Inundaciones",
     subtitle: "El impacto de la DANA y el agua",
-    image: "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/lake.jpg&v=1",
+    image: "https://pannellum.org/images/bignoniaceae.jpg",
     icon: Droplets,
     color: "from-blue-600 to-cyan-800",
   }
@@ -80,7 +80,7 @@ const STRIPE_COLORS = [
 export default function App() {
   const [viewState, setViewState] = useState<'menu' | 'viewer'>('menu');
   const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
-  const [viewer, setViewer] = useState<any>(null);
+  const viewerInstance = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [gyroEnabled, setGyroEnabled] = useState(false);
@@ -119,6 +119,9 @@ export default function App() {
       if (document.body.contains(script)) {
         document.body.removeChild(script);
       }
+      if (viewerInstance.current) {
+        viewerInstance.current.destroy();
+      }
     };
   }, []);
 
@@ -129,11 +132,15 @@ export default function App() {
     }
 
     try {
-      if (viewer) {
-        viewer.destroy();
+      if (viewerInstance.current) {
+        viewerInstance.current.destroy();
+        viewerInstance.current = null;
       }
 
-      const v = window.pannellum.viewer(viewerRef.current, {
+      // Clear the container just in case
+      viewerRef.current.innerHTML = '';
+
+      viewerInstance.current = window.pannellum.viewer(viewerRef.current, {
         type: "equirectangular",
         panorama: panorama,
         autoLoad: true,
@@ -147,13 +154,11 @@ export default function App() {
         crossOrigin: "anonymous"
       });
 
-      v.on('load', () => setIsLoading(false));
-      v.on('error', (err: any) => {
+      viewerInstance.current.on('load', () => setIsLoading(false));
+      viewerInstance.current.on('error', (err: any) => {
         console.error("Pannellum error:", err);
         setIsLoading(false);
       });
-      
-      setViewer(v);
     } catch (e) {
       console.error("Error initializing viewer:", e);
       setIsLoading(false);
@@ -176,16 +181,16 @@ export default function App() {
   };
 
   const toggleGyro = () => {
-    if (!viewer) return;
+    if (!viewerInstance.current) return;
     if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
       (DeviceOrientationEvent as any).requestPermission()
         .then((permissionState: string) => {
           if (permissionState === 'granted') {
             if (gyroEnabled) {
-              viewer.stopOrientation();
+              viewerInstance.current.stopOrientation();
               setGyroEnabled(false);
             } else {
-              viewer.startOrientation();
+              viewerInstance.current.startOrientation();
               setGyroEnabled(true);
             }
           }
@@ -193,18 +198,18 @@ export default function App() {
         .catch(console.error);
     } else {
       if (gyroEnabled) {
-        viewer.stopOrientation();
+        viewerInstance.current.stopOrientation();
         setGyroEnabled(false);
       } else {
-        viewer.startOrientation();
+        viewerInstance.current.startOrientation();
         setGyroEnabled(true);
       }
     }
   };
 
   const toggleFullscreen = () => {
-    if (viewer) {
-      viewer.toggleFullscreen();
+    if (viewerInstance.current) {
+      viewerInstance.current.toggleFullscreen();
     }
   };
 
