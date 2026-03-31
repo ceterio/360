@@ -40,15 +40,15 @@ interface Scenario {
   color: string;
 }
 
-const MENU_PANORAMA = "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/tunnel.jpg";
-const DEFAULT_360_IMAGE = "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/field.jpg";
+const MENU_PANORAMA = "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/tunnel.jpg&v=1";
+const DEFAULT_360_IMAGE = "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/field.jpg&v=1";
 
 const SCENARIOS: Scenario[] = [
   {
     id: "incendios",
     title: "Incendios Forestales",
     subtitle: "España y Portugal bajo el fuego",
-    image: "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/mountain.jpg",
+    image: "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/mountain.jpg&v=1",
     icon: Flame,
     color: "from-orange-600 to-red-700",
   },
@@ -64,7 +64,7 @@ const SCENARIOS: Scenario[] = [
     id: "inundaciones",
     title: "Inundaciones",
     subtitle: "El impacto de la DANA y el agua",
-    image: "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/lake.jpg",
+    image: "https://images.weserv.nl/?url=raw.githubusercontent.com/pchen66/panolens.js/master/examples/asset/textures/equirectangular/lake.jpg&v=1",
     icon: Droplets,
     color: "from-blue-600 to-cyan-800",
   }
