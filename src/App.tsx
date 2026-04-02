@@ -28,9 +28,6 @@ declare global {
   }
 }
 
-const PANN_CDN_JS = "https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js";
-const PANN_CDN_CSS = "https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css";
-
 interface Scenario {
   id: string;
   title: string;
@@ -92,33 +89,17 @@ export default function App() {
       setIsLoading(false);
     }, 6000);
 
-    // Load Pannellum CSS
-    const link = document.createElement('link');
-    link.rel = 'stylesheet';
-    link.href = PANN_CDN_CSS;
-    document.head.appendChild(link);
-
-    // Load Pannellum JS
-    const script = document.createElement('script');
-    script.src = PANN_CDN_JS;
-    script.async = true;
-    script.onload = () => {
-      // Small delay to ensure DOM is ready
-      setTimeout(() => initViewer(MENU_PANORAMA, true), 500);
-    };
-    script.onerror = () => {
-      console.error("Failed to load Pannellum script");
-      setIsLoading(false);
-      setLoadError(true);
-    };
-    document.body.appendChild(script);
+    // Wait for Pannellum to be available (it's now in index.html)
+    const checkPannellum = setInterval(() => {
+      if (window.pannellum) {
+        clearInterval(checkPannellum);
+        initViewer(MENU_PANORAMA, true);
+      }
+    }, 100);
 
     return () => {
       clearTimeout(timer);
-      document.head.removeChild(link);
-      if (document.body.contains(script)) {
-        document.body.removeChild(script);
-      }
+      clearInterval(checkPannellum);
       if (viewerInstance.current) {
         viewerInstance.current.destroy();
       }
@@ -429,8 +410,8 @@ export default function App() {
       </AnimatePresence>
 
       <style>{`
-        .pnpm-container .pnpm-controls { display: none !important; }
-        .pnpm-container .pnpm-load-button { display: none !important; }
+        .pnlm-container .pnlm-controls { display: none !important; }
+        .pnlm-container .pnlm-load-button { display: none !important; }
         
         #panorama { cursor: grab; }
         #panorama:active { cursor: grabbing; }
