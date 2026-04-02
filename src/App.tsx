@@ -48,7 +48,7 @@ const SCENARIOS: Scenario[] = [
     id: "incendios",
     title: "Incendios Forestales",
     subtitle: "España y Portugal bajo el fuego",
-    image: "https://pannellum.org/images/cerro-toco.jpg",
+    image: MENU_PANORAMA,
     icon: Flame,
     color: "from-orange-600 to-red-700",
   },
@@ -56,7 +56,7 @@ const SCENARIOS: Scenario[] = [
     id: "desertificacion",
     title: "Desertificación",
     subtitle: "La degradación de las tierras secas",
-    image: DEFAULT_360_IMAGE,
+    image: MENU_PANORAMA,
     icon: Sun,
     color: "from-yellow-600 to-orange-800",
   },
@@ -64,7 +64,7 @@ const SCENARIOS: Scenario[] = [
     id: "inundaciones",
     title: "Inundaciones",
     subtitle: "El impacto de la DANA y el agua",
-    image: "https://pannellum.org/images/bignoniaceae.jpg",
+    image: MENU_PANORAMA,
     icon: Droplets,
     color: "from-blue-600 to-cyan-800",
   }
@@ -104,7 +104,7 @@ export default function App() {
     script.async = true;
     script.onload = () => {
       // Small delay to ensure DOM is ready
-      setTimeout(() => initViewer(MENU_PANORAMA, true), 100);
+      setTimeout(() => initViewer(MENU_PANORAMA, true), 500);
     };
     script.onerror = () => {
       console.error("Failed to load Pannellum script");
@@ -140,6 +140,7 @@ export default function App() {
       // Clear the container just in case
       viewerRef.current.innerHTML = '';
 
+      console.log("Initializing Pannellum with:", panorama);
       viewerInstance.current = window.pannellum.viewer(viewerRef.current, {
         type: "equirectangular",
         panorama: panorama,
@@ -151,12 +152,13 @@ export default function App() {
         mouseZoom: true,
         friction: 0.1,
         autoRotate: autoRotate ? -2 : 0,
-        crossOrigin: "anonymous"
+        orientation: false
       });
 
       viewerInstance.current.on('load', () => setIsLoading(false));
       viewerInstance.current.on('error', (err: any) => {
         console.error("Pannellum error:", err);
+        setLoadError(true);
         setIsLoading(false);
       });
     } catch (e) {
@@ -167,6 +169,7 @@ export default function App() {
 
   const startScenario = (scenario: Scenario) => {
     setIsLoading(true);
+    setGyroEnabled(false);
     setCurrentScenario(scenario);
     setViewState('viewer');
     initViewer(scenario.image, false);
@@ -182,27 +185,46 @@ export default function App() {
 
   const toggleGyro = () => {
     if (!viewerInstance.current) return;
+    
+    const enable = () => {
+      try {
+        viewerInstance.current.startOrientation();
+        setGyroEnabled(true);
+      } catch (err) {
+        console.error("Error starting orientation:", err);
+      }
+    };
+
+    const disable = () => {
+      try {
+        viewerInstance.current.stopOrientation();
+        setGyroEnabled(false);
+      } catch (err) {
+        console.error("Error stopping orientation:", err);
+      }
+    };
+
     if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
       (DeviceOrientationEvent as any).requestPermission()
         .then((permissionState: string) => {
           if (permissionState === 'granted') {
             if (gyroEnabled) {
-              viewerInstance.current.stopOrientation();
-              setGyroEnabled(false);
+              disable();
             } else {
-              viewerInstance.current.startOrientation();
-              setGyroEnabled(true);
+              enable();
             }
+          } else {
+            alert("Permiso de giroscopio denegado. Por favor, habilítalo en los ajustes de tu navegador.");
           }
         })
-        .catch(console.error);
+        .catch((err: any) => {
+          console.error("Permission request error:", err);
+        });
     } else {
       if (gyroEnabled) {
-        viewerInstance.current.stopOrientation();
-        setGyroEnabled(false);
+        disable();
       } else {
-        viewerInstance.current.startOrientation();
-        setGyroEnabled(true);
+        enable();
       }
     }
   };
