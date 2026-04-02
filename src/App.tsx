@@ -75,6 +75,7 @@ const STRIPE_COLORS = [
 ];
 
 export default function App() {
+  console.log("App component rendering...");
   const [viewState, setViewState] = useState<'menu' | 'viewer'>('menu');
   const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
   const viewerInstance = useRef<any>(null);
