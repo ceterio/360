@@ -80,15 +80,16 @@ export default function App() {
   const [currentScenario, setCurrentScenario] = useState<Scenario | null>(null);
   const viewerInstance = useRef<any>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isBackgroundLoading, setIsBackgroundLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [gyroEnabled, setGyroEnabled] = useState(false);
   const viewerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Safety timeout: if it takes more than 6 seconds, show the menu anyway
+    // Safety timeout: if it takes more than 10 seconds, show the menu anyway
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 6000);
+    }, 10000);
 
     // Wait for Pannellum to be available (it's now in index.html)
     const checkPannellum = setInterval(() => {
@@ -137,7 +138,10 @@ export default function App() {
         orientation: false
       });
 
-      viewerInstance.current.on('load', () => setIsLoading(false));
+      viewerInstance.current.on('load', () => {
+        setIsLoading(false);
+        setIsBackgroundLoading(false);
+      });
       viewerInstance.current.on('error', (err: any) => {
         console.error("Pannellum error:", err);
         setLoadError(true);
@@ -256,6 +260,16 @@ export default function App() {
                 <p className="text-zinc-200 text-sm md:text-base leading-relaxed max-w-2xl mx-auto drop-shadow-lg font-medium">
                   En 2024, los desastres naturales provocaron el desplazamiento forzado de <span className="text-white font-bold underline decoration-red-500 underline-offset-4">45,8 millones de personas</span>, la mayor cifra jamás registrada. Explora los escenarios para descubrir las claves de esta crisis global.
                 </p>
+                
+                {isBackgroundLoading && (
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="mt-4 flex items-center justify-center gap-2 text-red-400 text-[10px] uppercase tracking-widest font-bold"
+                  >
+                    <Loader2 className="w-3 h-3 animate-spin" /> Cargando entorno 360°...
+                  </motion.div>
+                )}
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -297,6 +311,11 @@ export default function App() {
               {STRIPE_COLORS.map((color, i) => (
                 <div key={i} className="flex-1 h-full" style={{ backgroundColor: color }} />
               ))}
+            </div>
+
+            {/* Loading Note */}
+            <div className="absolute bottom-6 right-6 z-10 hidden md:flex items-center gap-2 text-[9px] uppercase tracking-widest text-zinc-500 font-bold bg-black/20 px-3 py-1 rounded-full backdrop-blur-sm">
+              <Info className="w-3 h-3 text-red-500" /> Las imágenes 360° pueden tardar unos segundos en cargar
             </div>
           </motion.div>
         )}
