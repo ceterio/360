@@ -45,7 +45,7 @@ const SCENARIOS: Scenario[] = [
     id: "incendios",
     title: "Incendios Forestales",
     subtitle: "España y Portugal bajo el fuego",
-    image: "https://api.allorigins.win/raw?url=" + encodeURIComponent("https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh81DNP0n3qJWRq4rZkKDS1XcIpq-8Mp3sY_e9671BFDtJo00oY4pkgtP_E6zoZxLzfLty8yqITKO3eSnMYrP1jzuipNi9bIiKCVi_L7Uu9GE7pCFkgTvtj1bPU2x0w07wGlu6AKYwp0Op6uo0Ig0B-vNx-xDmmDoX0NTYoR1_zDpJCBnyQSylYBGhw9kdV/s1600/Incendios.png"),
+    image: "/360/images/incendios.png",
     icon: Flame,
     color: "from-orange-600 to-red-700",
   },
