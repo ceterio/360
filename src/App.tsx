@@ -82,6 +82,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [isBackgroundLoading, setIsBackgroundLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
+  const [gyroError, setGyroError] = useState<string | null>(null);
   const [gyroEnabled, setGyroEnabled] = useState(false);
   const viewerRef = useRef<HTMLDivElement>(null);
 
@@ -171,13 +172,17 @@ export default function App() {
 
   const toggleGyro = () => {
     if (!viewerInstance.current) return;
+    setGyroError(null);
     
     const enable = () => {
       try {
         viewerInstance.current.startOrientation();
         setGyroEnabled(true);
+        // Dummy listener to "wake up" the API in some browsers
+        window.addEventListener('deviceorientation', () => {}, { once: true });
       } catch (err) {
         console.error("Error starting orientation:", err);
+        setGyroError("Error al activar sensores");
       }
     };
 
@@ -190,8 +195,11 @@ export default function App() {
       }
     };
 
-    if (typeof (DeviceOrientationEvent as any).requestPermission === 'function') {
-      (DeviceOrientationEvent as any).requestPermission()
+    const DeviceOrientationEvent = (window as any).DeviceOrientationEvent;
+
+    if (DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      // iOS 13+ logic
+      DeviceOrientationEvent.requestPermission()
         .then((permissionState: string) => {
           if (permissionState === 'granted') {
             if (gyroEnabled) {
@@ -200,18 +208,22 @@ export default function App() {
               enable();
             }
           } else {
-            alert("Permiso de giroscopio denegado. Por favor, habilítalo en los ajustes de tu navegador.");
+            setGyroError("Permiso de sensores denegado");
           }
         })
         .catch((err: any) => {
           console.error("Permission request error:", err);
+          setGyroError("Error al solicitar permisos");
         });
-    } else {
+    } else if (DeviceOrientationEvent) {
+      // Android or older iOS
       if (gyroEnabled) {
         disable();
       } else {
         enable();
       }
+    } else {
+      setGyroError("Giroscopio no disponible en este dispositivo");
     }
   };
 
@@ -385,7 +397,20 @@ export default function App() {
             </div>
 
             {/* HUD - Bottom Instructions */}
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 w-full px-6 flex justify-center">
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-40 w-full px-6 flex flex-col items-center gap-4">
+              <AnimatePresence>
+                {gyroError && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="bg-red-600/90 backdrop-blur-md px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-xl"
+                  >
+                    <AlertTriangle className="w-3 h-3" /> {gyroError}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <div className="bg-black/60 backdrop-blur-xl border border-white/10 px-8 py-4 rounded-full flex items-center gap-6 text-[10px] uppercase tracking-[0.2em] opacity-90 shadow-2xl pointer-events-auto">
                 <span className="flex items-center gap-2"><MousePointer2 className="w-3 h-3 text-red-600" /> Arrastra para explorar</span>
                 <span className="w-1 h-1 bg-white/20 rounded-full" />
