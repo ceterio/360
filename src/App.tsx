@@ -156,9 +156,19 @@ export default function App() {
 
   const startScenario = async (scenario: Scenario) => {
     setIsLoading(true);
+    setLoadError(false);
     setCurrentScenario(scenario);
     setViewState('viewer');
     
+    // Safety timeout for scenario loading
+    const scenarioTimeout = setTimeout(() => {
+      if (isLoading && viewState === 'viewer') {
+        setIsLoading(false);
+        setLoadError(true);
+        backToMenu();
+      }
+    }, 10000);
+
     // Initialize viewer first
     initViewer(scenario.image, false);
 
@@ -168,11 +178,11 @@ export default function App() {
       try {
         const permissionState = await DeviceOrientationEvent.requestPermission();
         if (permissionState === 'granted') {
-          // Wait a tiny bit for the viewer to be ready if needed
           setTimeout(() => {
             if (viewerInstance.current) {
               viewerInstance.current.startOrientation();
               setGyroEnabled(true);
+              clearTimeout(scenarioTimeout);
             }
           }, 500);
         }
@@ -180,11 +190,11 @@ export default function App() {
         console.error("Gyro permission error on start:", err);
       }
     } else if (DeviceOrientationEvent) {
-      // Android/Desktop - wait for viewer
       setTimeout(() => {
         if (viewerInstance.current) {
           viewerInstance.current.startOrientation();
           setGyroEnabled(true);
+          clearTimeout(scenarioTimeout);
         }
       }, 500);
     }
@@ -192,6 +202,7 @@ export default function App() {
 
   const backToMenu = () => {
     setIsLoading(true);
+    setLoadError(false);
     setViewState('menu');
     setCurrentScenario(null);
     setGyroEnabled(false);
@@ -485,8 +496,17 @@ export default function App() {
               ))}
             </div>
             <p className="mt-8 text-zinc-500 text-[10px] uppercase tracking-widest font-bold">
-              {loadError ? "Error de conexión - Cargando interfaz básica" : "Preparando entorno 360°"}
+              {loadError ? "Error de conexión - Reintentando" : "Preparando entorno 360°"}
             </p>
+
+            {viewState === 'viewer' && (
+              <button 
+                onClick={backToMenu}
+                className="mt-12 px-6 py-2 rounded-full border border-white/10 text-[10px] uppercase tracking-widest hover:bg-white/5 transition-colors text-zinc-400"
+              >
+                Cancelar y volver
+              </button>
+            )}
           </motion.div>
         )}
       </AnimatePresence>
