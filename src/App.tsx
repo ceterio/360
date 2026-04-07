@@ -154,12 +154,40 @@ export default function App() {
     }
   };
 
-  const startScenario = (scenario: Scenario) => {
+  const startScenario = async (scenario: Scenario) => {
     setIsLoading(true);
-    setGyroEnabled(false);
     setCurrentScenario(scenario);
     setViewState('viewer');
+    
+    // Initialize viewer first
     initViewer(scenario.image, false);
+
+    // Request gyro permission immediately since this is a user-initiated click
+    const DeviceOrientationEvent = (window as any).DeviceOrientationEvent;
+    if (DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+      try {
+        const permissionState = await DeviceOrientationEvent.requestPermission();
+        if (permissionState === 'granted') {
+          // Wait a tiny bit for the viewer to be ready if needed
+          setTimeout(() => {
+            if (viewerInstance.current) {
+              viewerInstance.current.startOrientation();
+              setGyroEnabled(true);
+            }
+          }, 500);
+        }
+      } catch (err) {
+        console.error("Gyro permission error on start:", err);
+      }
+    } else if (DeviceOrientationEvent) {
+      // Android/Desktop - wait for viewer
+      setTimeout(() => {
+        if (viewerInstance.current) {
+          viewerInstance.current.startOrientation();
+          setGyroEnabled(true);
+        }
+      }, 500);
+    }
   };
 
   const backToMenu = () => {
@@ -407,6 +435,15 @@ export default function App() {
                     className="bg-red-600/90 backdrop-blur-md px-4 py-2 rounded-lg text-[10px] font-bold uppercase tracking-widest flex items-center gap-2 shadow-xl"
                   >
                     <AlertTriangle className="w-3 h-3" /> {gyroError}
+                  </motion.div>
+                )}
+                {!gyroEnabled && !gyroError && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-lg text-[9px] font-bold uppercase tracking-widest flex items-center gap-2 border border-white/10"
+                  >
+                    <Smartphone className="w-3 h-3 text-red-500" /> Pulsa el icono del móvil para activar el giro
                   </motion.div>
                 )}
               </AnimatePresence>
