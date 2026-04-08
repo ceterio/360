@@ -37,8 +37,8 @@ interface Scenario {
   color: string;
 }
 
-const MENU_PANORAMA = "https://pannellum.org/images/alma.jpg";
-const DEFAULT_360_IMAGE = "https://pannellum.org/images/jfk.jpg";
+const MENU_PANORAMA = "/360/images/menu.png";
+const DEFAULT_360_IMAGE = "/360/images/menu.png";
 
 const SCENARIOS: Scenario[] = [
   {
@@ -53,7 +53,7 @@ const SCENARIOS: Scenario[] = [
     id: "desertificacion",
     title: "Desertificación",
     subtitle: "La degradación de las tierras secas",
-    image: MENU_PANORAMA,
+    image: "/360/images/desertificacion.png",
     icon: Sun,
     color: "from-yellow-600 to-orange-800",
   },
@@ -61,7 +61,7 @@ const SCENARIOS: Scenario[] = [
     id: "inundaciones",
     title: "Inundaciones",
     subtitle: "El impacto de la DANA y el agua",
-    image: MENU_PANORAMA,
+    image: "/360/images/inundaciones.png",
     icon: Droplets,
     color: "from-blue-600 to-cyan-800",
   }
