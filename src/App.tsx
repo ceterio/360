@@ -307,14 +307,14 @@ export default function App() {
                 transition={{ delay: 0.2 }}
                 className="text-center mb-12"
               >
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-[10px] uppercase tracking-[0.3em] font-bold mb-6">
-                  <AlertTriangle className="w-3 h-3" /> Prueba 4: Crisis Climática
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/20 border border-red-500/40 text-red-400 text-[10px] uppercase tracking-[0.3em] font-bold mb-6 backdrop-blur-md">
+                  <AlertTriangle className="w-3 h-3" /> Crisis Climática: El Tiempo se Agota
                 </div>
-                <h1 className="text-4xl md:text-6xl font-black tracking-tighter uppercase mb-6 leading-none drop-shadow-2xl">
+                <h1 className="text-4xl md:text-7xl font-black tracking-tighter uppercase mb-6 leading-none drop-shadow-[0_5px_15px_rgba(0,0,0,0.5)]">
                   Migraciones <span className="text-red-600">Climáticas</span>
                 </h1>
-                <p className="text-zinc-200 text-sm md:text-base leading-relaxed max-w-2xl mx-auto drop-shadow-lg font-medium">
-                  En 2024, los desastres naturales provocaron el desplazamiento forzado de <span className="text-white font-bold underline decoration-red-500 underline-offset-4">45,8 millones de personas</span>, la mayor cifra jamás registrada. Explora los escenarios para descubrir las claves de esta crisis global.
+                <p className="text-zinc-100 text-sm md:text-lg leading-relaxed max-w-2xl mx-auto drop-shadow-lg font-medium bg-black/20 p-4 rounded-2xl backdrop-blur-sm">
+                  En 2024, los desastres naturales provocaron el desplazamiento forzado de <span className="text-white font-bold underline decoration-red-500 underline-offset-4">45,8 millones de personas</span>. El reloj de arena no se detiene. Explora las causas de esta crisis global.
                 </p>
                 
                 {isBackgroundLoading && (

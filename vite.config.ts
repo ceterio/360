@@ -5,7 +5,7 @@ import {defineConfig, loadEnv} from 'vite';
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: '/360/',
+    base: mode === 'production' ? '/360/' : '/',
     plugins: [react(), tailwindcss()],
     build: {
       outDir: 'dist',
