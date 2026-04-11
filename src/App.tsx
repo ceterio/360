@@ -37,15 +37,19 @@ interface Scenario {
   color: string;
 }
 
-const MENU_PANORAMA = "/360/images/menu.png";
-const DEFAULT_360_IMAGE = "/360/images/menu.png";
+const BASE_PATH = import.meta.env.BASE_URL.endsWith('/') 
+  ? import.meta.env.BASE_URL.slice(0, -1) 
+  : import.meta.env.BASE_URL;
+
+const MENU_PANORAMA = `${BASE_PATH}/images/menu.png`;
+const DEFAULT_360_IMAGE = `${BASE_PATH}/images/menu.png`;
 
 const SCENARIOS: Scenario[] = [
   {
     id: "incendios",
     title: "Incendios Forestales",
     subtitle: "España y Portugal bajo el fuego",
-    image: "/360/images/incendios.png",
+    image: `${BASE_PATH}/images/incendios.png`,
     icon: Flame,
     color: "from-orange-600 to-red-700",
   },
@@ -53,7 +57,7 @@ const SCENARIOS: Scenario[] = [
     id: "desertificacion",
     title: "Desertificación",
     subtitle: "La degradación de las tierras secas",
-    image: "/360/images/desertificacion.png",
+    image: `${BASE_PATH}/images/desertificacion.png`,
     icon: Sun,
     color: "from-yellow-600 to-orange-800",
   },
@@ -61,7 +65,7 @@ const SCENARIOS: Scenario[] = [
     id: "inundaciones",
     title: "Inundaciones",
     subtitle: "El impacto de la DANA y el agua",
-    image: "/360/images/inundaciones.png",
+    image: `${BASE_PATH}/images/inundaciones.png`,
     icon: Droplets,
     color: "from-blue-600 to-cyan-800",
   }
@@ -140,11 +144,12 @@ export default function App() {
       });
 
       viewerInstance.current.on('load', () => {
+        console.log("Successfully loaded panorama:", panorama);
         setIsLoading(false);
         setIsBackgroundLoading(false);
       });
       viewerInstance.current.on('error', (err: any) => {
-        console.error("Pannellum error:", err);
+        console.error("Pannellum error loading:", panorama, "Error details:", err);
         setLoadError(true);
         setIsLoading(false);
       });
